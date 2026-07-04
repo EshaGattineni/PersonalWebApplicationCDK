@@ -1,16 +1,15 @@
-import * as cdk from 'aws-cdk-lib/core';
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
+import { CustomerInfoTable } from './constructs/persistanceStack';
 
 export class PersonalWebApplicationCdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
+    const customerInfo = new CustomerInfoTable(this, 'CustomerInfo');
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'PersonalWebApplicationCdkQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
+    new cdk.CfnOutput(this, 'CustomerInfoTableName', {
+      value: customerInfo.table.tableName,
+    });
   }
 }
