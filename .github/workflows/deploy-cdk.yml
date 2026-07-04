@@ -14,9 +14,9 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: '20' }
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with: { node-version: '22' }
       - run: npm install
       - name: Synth all stacks
         run: npx cdk synth
@@ -27,14 +27,14 @@ jobs:
     runs-on: ubuntu-latest
     environment: beta
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: '20' }
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with: { node-version: '22' }
       - run: npm install
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::933500793398:role/github-actions-cdk-deploy
-          aws-region: us-east-1
+          aws-region: us-west-2
       - run: npx cdk deploy Beta-PersistenceStack --require-approval never
 
   deploy-prod:
@@ -43,12 +43,12 @@ jobs:
     runs-on: ubuntu-latest
     environment: prod
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: '20' }
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with: { node-version: '22' }
       - run: npm install
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::933500793398:role/github-actions-cdk-deploy
-          aws-region: us-west-2
+          aws-region: us-east-1
       - run: npx cdk deploy Prod-PersistenceStack --require-approval never
