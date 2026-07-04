@@ -34,6 +34,6 @@ jobs:
       - name: CDK Synth
         run: npx cdk synth
 
-      - name: CDK Deploy
+      - name: CDK Deploy Beta
         if: github.ref == 'refs/heads/main'
-        run: npx cdk deploy --require-approval never
+        run: npx cdk deploy Beta-PersistenceStack --require-approval never

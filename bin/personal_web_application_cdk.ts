@@ -1,6 +1,17 @@
 #!/usr/bin/env node
 import * as cdk from 'aws-cdk-lib';
-import { PersonalWebApplicationCdkStack } from '../lib/personal_web_application_cdk-stack';
+import { PersistenceStack } from '../lib/stacks/persistence-stack';
 
 const app = new cdk.App();
-new PersonalWebApplicationCdkStack(app, 'PersonalWebApplicationCdkStack', {});
+
+// Beta environment
+new PersistenceStack(app, 'Beta-PersistenceStack', {
+    env: { account: '933500793398', region: 'us-east-1' },
+    stageName: 'beta',
+});
+
+// Prod environment
+new PersistenceStack(app, 'Prod-PersistenceStack', {
+    env: { account: '933500793398', region: 'us-west-2' },
+    stageName: 'prod',
+});
