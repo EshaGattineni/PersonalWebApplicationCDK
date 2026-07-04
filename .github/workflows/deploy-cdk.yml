@@ -1,4 +1,4 @@
-name: Deploy CDK
+name: Deploy CDK Multi-Stage
 
 on:
   push:
@@ -11,29 +11,44 @@ permissions:
   contents: read
 
 jobs:
-  deploy:
+  validate:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm install
+      - name: Synth all stacks
+        run: npx cdk synth
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Configure AWS credentials via OIDC
-        uses: aws-actions/configure-aws-credentials@v4
+  deploy-beta:
+    needs: validate
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: beta
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm install
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::933500793398:role/github-actions-cdk-deploy
           aws-region: us-east-1
+      - run: npx cdk deploy Beta-PersistenceStack --require-approval never
 
-      - name: CDK Synth
-        run: npx cdk synth
-
-      - name: CDK Deploy Beta
-        if: github.ref == 'refs/heads/main'
-        run: npx cdk deploy Beta-PersistenceStack --require-approval never
+  deploy-prod:
+    needs: deploy-beta
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm install
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::933500793398:role/github-actions-cdk-deploy
+          aws-region: us-west-2
+      - run: npx cdk deploy Prod-PersistenceStack --require-approval never
