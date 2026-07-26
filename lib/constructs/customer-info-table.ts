@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { Table, AttributeType, BillingMode, ITable } from 'aws-cdk-lib/aws-dynamodb';
 
+// For the customer info table
 interface CustomerInfoTableProps {
     stageName: string;
 }
